@@ -1,17 +1,28 @@
 import { Router } from 'express';
-import { AuthControllers } from './auth.controller';
-import { AuthValidation } from './auth.validation';
 import validateRequest from '../../middlewares/validateRequest';
+import { uservalidationAll } from './auth.validation';
+import { AuthControllers } from './auth.controller';
+
 
 const router = Router();
 router.post(
   '/register',
-  validateRequest(AuthValidation.AuthRegistrationzodSchema),
+  validateRequest(uservalidationAll.userRegistervalidation),
   AuthControllers.userRegister,
 );
 router.post(
   '/login',
-  validateRequest(AuthValidation.userLoginvalidationzodShema),
+  validateRequest(uservalidationAll.userLoginvalidation),
   AuthControllers.userLogin,
 );
+router.post(
+  '/refresh-token',
+  validateRequest(uservalidationAll.refreshTokenValidationSchema),
+  AuthControllers.refreshToken,
+);
+router.get('/alluser', AuthControllers.AlluserGet);
+router.put('/updateRole/:id', AuthControllers.UpdateRole)
+router.delete('/deletedUser/:id', AuthControllers.DeletedUser)
+
+
 export const authRouter = router;

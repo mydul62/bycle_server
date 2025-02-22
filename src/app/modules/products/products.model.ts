@@ -34,7 +34,7 @@ const BicycleSchema = new Schema(
         hex: { type: String, required: true }
       }
     ],
-    quantity: { 
+    stock: { 
       type: Number, 
       required: [true, 'The quantity of bicycles is required.'], 
       min: [0, 'The quantity cannot be negative.'],

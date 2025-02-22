@@ -1,140 +1,134 @@
-import { bicycleModel } from '../products/products.model';
-import { orderModel } from './order.model';
-import { orderService } from './order.services';
-import { Response, Request } from 'express';
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import { bicycleModel } from "../products/products.model";
+import { Order } from "./order.interface";
+import { orderModel } from "./order.model";
+import { orderService } from "./order.services";
+import { Response, Request } from "express";
 
-const createOrder = async (req: Request, res: Response) => {
-  try {
-    const { email, product, quantity, totalPrice } = req.body;
-    const foundProduct = await bicycleModel.findById(product);
-    if (!foundProduct) {
-      res.status(400).json({ message: 'Product not found', status: false });
-      return;
-    }
-    if (foundProduct.quantity < quantity) {
-      res.status(400).json({ message: 'Insufficient stock', status: false });
-      return;
-    }
-    foundProduct.quantity -= quantity;
+const createOrder =  catchAsync(async (req, res) => {    const { 
+  firstName, lastName, email, phone, streetAddress, 
+  apartment, city, postcode, orderNotes, products, totalPrice 
+} = req.body;
 
-    if (foundProduct.quantity === 0) {
-      foundProduct.inStock = false;
-      return;
-    }
-    await foundProduct.save();
+// Check if products array is empty
+if (!products || !Array.isArray(products) || products.length === 0) {
+  res.status(400).json({ message: "Products are required", status: false });
+  return;
+}
 
-    const newOrder = {
-      email,
-      product,
-      quantity,
-      totalPrice,
-    };
-    const result = await orderService.createOrderServiceInDB(newOrder);
+// Validate each product
+for (const item of products) {
+  const { product, quantity } = item;
 
-    res.status(200).json({
-      success: true,
-      message: 'Order created successfully',
-      data: result,
-    });
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      const validationErrors = (err as { errors?: unknown }).errors;
-      res.status(400).json({
-        message: 'Validation failed',
-        success: false,
-        error: {
-          name: err.name || 'ValidationError',
-          errors: validationErrors || {
-            message: err.message,
-            name: 'ValidatorError',
-            properties: {
-              message: err.message,
-            },
-          },
-        },
-        stack: err.stack || 'No stack available',
-      });
-    }
+  const foundProduct = await bicycleModel.findById(product);
+  if (!foundProduct) {
+    res.status(400).json({ message: `Product with ID ${product} not found`, status: false });
+    return;
   }
+  if (foundProduct.stock < quantity) {
+    res.status(400).json({ message: `Insufficient stock for product ID ${product}`, status: false });
+    return;
+  }
+
+  // Deduct stock
+  foundProduct.stock -= quantity;
+  if (foundProduct.stock === 0) {
+    foundProduct.inStock = false;
+  }
+  await foundProduct.save();
+}
+
+// Create order object
+const newOrder: Order = {
+  firstName,
+  lastName,
+  email,
+  phone,
+  streetAddress,
+  apartment,
+  city,
+  postcode,
+  orderNotes,
+  products,
+  totalPrice,
 };
 
-const getRevenue = async (req: Request, res: Response) => {
+// Save order in database
+const result = await orderService.createOrderServiceInDB(newOrder,req.ip!);
+
+sendResponse(res, {
+        statusCode: 200,
+        message: "Order placed successfully",
+        data: result,
+      })
+      })
+      
+const verifyPayment = catchAsync(async (req, res) => {
+  const order = await orderService.verifyPayment(req.query.order_id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    message: "Order verified successfully",
+    data: order,
+  });
+});
+const getRevenue = async (req: Request, res: Response): Promise<void> => {
   try {
     const revenue = await orderModel.aggregate([
       {
-        $lookup: {
-          from: 'bicycles',
-          let: { productId: '$product' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ['$_id', { $toObjectId: '$$productId' }],
-                },
-              },
-            },
-          ],
-          as: 'BicycleDetails',
-        },
-      },
-      {
-        $unwind: '$BicycleDetails',
-      },
-      {
-        $project: {
-          totalRevenuePerOrder: {
-            $multiply: ['$quantity', '$BicycleDetails.price'],
-          },
-        },
-      },
-      {
         $group: {
           _id: null,
-          totalRevenue: { $sum: '$totalRevenuePerOrder' },
+          totalRevenue: { $sum: "$totalPrice" },
         },
       },
     ]);
-    if (revenue.length === 0) {
-      res.status(200).json({
-        message: 'No revenue calculated, no orders found',
-        status: true,
-        data: { totalRevenue: 0 },
-      });
-      return;
-    }
 
     res.status(200).json({
-      message: 'Revenue calculated successfully',
+      message: "Revenue calculated successfully",
       status: true,
-      data: { totalRevenue: revenue[0].totalRevenue },
+      data: revenue.length ? revenue[0].totalRevenue : 0,
     });
-  } catch (error: unknown) {
+
+  } catch (error) {
+    console.error("Error getting revenue:", error); // Debugging log
+
     res.status(500).json({
       status: false,
-      message: error,
-    });
-  }
-};
-const gerAllOrders = async (req: Request, res: Response) => {
-  try {
-    const orders =await orderService.getAllOrderServiceFromDB();
-    
-    res.status(200).json({
-      success: true,
-      message: 'Bicycles retrieved successfully',
-      data: orders,
-    });
-    
-  } catch (error: unknown) {
-    res.status(405).json({
-      status: false,
-      message: error,
+      message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
 
+const getAllOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const orders = await orderService.getAllOrderServiceFromDB();
+    
+    
+
+
+    res.status(200).json({
+      success: true,
+      message: "Orders retrieved successfully",
+      data: orders,
+    });
+
+  } catch (error) {
+    console.error("Error retrieving orders:", error); // Debugging log
+
+    res.status(500).json({
+      status: false,
+      message: "Failed to retrieve orders",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+// Export the controller
 export const orderController = {
   createOrder,
   getRevenue,
-  gerAllOrders,
+  getAllOrders, 
+  verifyPayment// ✅ Fixed typo
 };
