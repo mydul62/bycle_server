@@ -66,7 +66,7 @@ const UpdateRole = catchAsync(async (req, res) => {
 const changePasswordService = catchAsync(async (req, res) => {
   const id = req.user.userID
   const result = await AlluserService.changePasswordService(id, req.body);
-
+ 
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -87,18 +87,21 @@ const singleUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const upateUser = catchAsync(async (req, res) => {
-  // const id = req.user.userId;
-  // const body = req.body
-  // // const result = await AlluserService.upateUser(id, body);
 
-  // sendResponse(res, {
-  //   statusCode: 200,
-  //   success: true,
-  //   message: 'user profile update succesfully!',
-  //   data: result,
-  // });
-});
+  const upateUserInDB = catchAsync(async (req, res) => {
+    const id = req.user.userID; 
+   console.log(id,req.body)
+   const body ={photo:'583485834583'}
+    const result = await AlluserService.upateUser(id, body); 
+  
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'User profile updated successfully!',
+      data: result,
+    });
+  });
+  
 
 const DeletedUser = catchAsync(async (req, res) => {
   const result = await AlluserService.DeletedUser(req.params.id);
@@ -118,7 +121,7 @@ export const AlluserController = {
   UpdateRole,
   DeletedUser,
   changePasswordService,
-  upateUser,
+  upateUserInDB,
   singleUser
 
 };

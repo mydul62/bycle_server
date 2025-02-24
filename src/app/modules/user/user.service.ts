@@ -108,9 +108,10 @@ const changePasswordService = async (userId: string, body:any) => {
   return { message: 'Password changed successfully' };
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const upateUser = async (userId: string, body:any) => {
+const upateUser = async (userID: string, body:any) => {
+console.log(userID,body)
   const updatedUser = await usermodel.findByIdAndUpdate(
-    userId,
+    userID,
     body,
     { new: true, runValidators: true }
   ); 

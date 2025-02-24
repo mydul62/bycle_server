@@ -19,7 +19,6 @@ const createProductServiceInDB =async (payload:Bicycle)=>{
     quary,
   )
     .search(['name',])
-    .sort()
     .filter();
   const result = await queryMaker.QueryModel;
   return result;
