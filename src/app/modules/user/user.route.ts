@@ -21,7 +21,7 @@ router.post(
 );
 router.get('/alluser',authorizeRole(['admin']), AlluserController.AlluserGet);
 router.get('/sigleusr',authorizeRole(['user','admin']),AlluserController.singleUser);
-router.put('/updateuser',authorizeRole(['user','admin']), AlluserController.upateUserInDB);
+router.put('/:id',authorizeRole(['user','admin']), AlluserController.upateUserInDB);
 router.put('/updateRole/:id', authorizeRole(['admin']), AlluserController.UpdateRole)
 router.delete('/deletedUsers/:id',authorizeRole(['admin']),  AlluserController.DeletedUser)
 router.put('/changePassword', authorizeRole(['user','admin']), AlluserController.changePasswordService)

@@ -10,7 +10,7 @@ const globalerrorhandler_1 = require("./app/middlewares/globalerrorhandler");
 const notFound_1 = require("./app/middlewares/notFound");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({ origin: ["https://bycle-zone.vercel.app"],
+app.use((0, cors_1.default)({ origin: ["http://localhost:5173", "https://bycle-zone.vercel.app"],
     credentials: true }));
 // app.use(cors({    origin: ["http://localhost:5173"],
 //   credentials: true }));

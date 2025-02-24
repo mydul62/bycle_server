@@ -108,10 +108,21 @@ const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
+const deleteOrderdb = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { productId } = req.params;
+    const data = yield order_services_1.orderService.deleteOrder(productId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        message: 'User registered successfully',
+        statusCode: 201,
+        data: data,
+    });
+}));
 // Export the controller
 exports.orderController = {
     createOrder,
     getRevenue,
     getAllOrders,
-    verifyPayment // ✅ Fixed typo
+    verifyPayment, // ✅ Fixed typo
+    deleteOrderdb
 };

@@ -90,9 +90,9 @@ const singleUser = catchAsync(async (req, res) => {
 
   const upateUserInDB = catchAsync(async (req, res) => {
     const id = req.user.userID; 
-   console.log(id,req.body)
-   const body ={photo:'583485834583'}
-    const result = await AlluserService.upateUser(id, body); 
+    const photo = req.params.id
+
+    const result = await AlluserService.upateUser(id, photo); 
   
     sendResponse(res, {
       statusCode: 200,

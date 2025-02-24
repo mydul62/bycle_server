@@ -94,9 +94,8 @@ const singleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
 }));
 const upateUserInDB = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.user.userID;
-    console.log(id, req.body);
-    const body = { photo: '583485834583' };
-    const result = yield user_service_1.AlluserService.upateUser(id, body);
+    const photo = req.params.id;
+    const result = yield user_service_1.AlluserService.upateUser(id, photo);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: 200,
         success: true,

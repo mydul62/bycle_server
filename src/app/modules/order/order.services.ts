@@ -44,6 +44,10 @@ const getAllOrderServiceFromDB = async () => {
   const allOrder = await orderModel.find().populate("products.product");
   return allOrder;
 };
+const deleteOrder = async (id:string) => {
+  const result = await orderModel.deleteOne({ _id: id });
+    return result;
+};
 
 const verifyPayment = async (order_id: string) => {
   const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
@@ -75,7 +79,7 @@ const verifyPayment = async (order_id: string) => {
      if (order && verifiedPayment[0].bank_status === "Success") {
     for (const item of order.products) {
       const bicycle = await bicycleModel.findById(item.product);
-      
+     
       if (bicycle) {
         bicycle.stock -= item.quantity; // স্টক কমানো
         if (bicycle.stock <= 0) {
@@ -97,4 +101,5 @@ export const orderService = {
   createOrderServiceInDB,
   getAllOrderServiceFromDB,
   verifyPayment,
+  deleteOrder
 };

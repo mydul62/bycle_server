@@ -46,6 +46,10 @@ const getAllOrderServiceFromDB = () => __awaiter(void 0, void 0, void 0, functio
     const allOrder = yield order_model_1.orderModel.find().populate("products.product");
     return allOrder;
 });
+const deleteOrder = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield order_model_1.orderModel.deleteOne({ _id: id });
+    return result;
+});
 const verifyPayment = (order_id) => __awaiter(void 0, void 0, void 0, function* () {
     const verifiedPayment = yield order_utils_1.orderUtils.verifyPaymentAsync(order_id);
     if (verifiedPayment.length) {
@@ -88,4 +92,5 @@ exports.orderService = {
     createOrderServiceInDB,
     getAllOrderServiceFromDB,
     verifyPayment,
+    deleteOrder
 };
