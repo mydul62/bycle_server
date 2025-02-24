@@ -1,16 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userValidation = void 0;
+exports.uservalidationAll = void 0;
 const zod_1 = require("zod");
-const userValidationZodSchema = zod_1.z.object({
+const userRegistervalidation = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string({ required_error: "Name is required" }),
-        email: zod_1.z.string().email({ message: "Invalid email address" }),
-        password: zod_1.z.string({ required_error: "Password is required" }),
-        role: zod_1.z.enum(["admin", "user"]).optional(),
-        isBlocked: zod_1.z.boolean().optional(),
+        name: zod_1.z.string({
+            required_error: 'please must be fill up name field',
+            invalid_type_error: 'Name must be a string',
+        }),
+        email: zod_1.z
+            .string({
+            required_error: 'please must be fill up email field',
+            invalid_type_error: 'Name must be a string',
+        })
+            .email(),
+        password: zod_1.z.string({
+            required_error: 'please must be fill up password field',
+            invalid_type_error: 'Name must be a string',
+        }),
     }),
 });
-exports.userValidation = {
-    userValidationZodSchema,
+const userLoginvalidation = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z
+            .string({
+            required_error: 'please must be fill up email field',
+            invalid_type_error: 'Name must be a string',
+        })
+            .email(),
+        password: zod_1.z.string({
+            required_error: 'please must be fill up password field',
+            invalid_type_error: 'Name must be a string',
+        }),
+    }),
+});
+const refreshTokenValidationSchema = zod_1.z.object({
+    cookies: zod_1.z.object({
+        refreshToken: zod_1.z.string({
+            required_error: 'Refresh token is required!',
+        }),
+    }),
+});
+exports.uservalidationAll = {
+    userLoginvalidation,
+    userRegistervalidation,
+    refreshTokenValidationSchema
 };

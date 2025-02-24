@@ -107,7 +107,7 @@ const updateBicycle = async (req: Request, res: Response) => {
   try {
   const {productId}=req.params;
   const payload = req.body;
- 
+  console.log(productId,payload)
    const result = await productService.updateBicleServiceFromDb(payload,productId);
    res.status(200).json({
      message: 'Bicycles updated successfully',

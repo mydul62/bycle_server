@@ -10,7 +10,6 @@ const colorSchema = z.object({
 
 export const bycleValidationZodSchema = z.object({
   body: z.object({
-    id: z.number({ required_error: "ID is required." }),
     name: z.string({ required_error: "Name is required." }),
     price: z
       .number({ required_error: "Price is required." })

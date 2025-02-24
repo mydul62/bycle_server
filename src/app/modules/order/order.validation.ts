@@ -1,35 +1,44 @@
 import { z } from "zod";
 
-const colorSchema = z.object({
-  name: z.string({ required_error: "Color name is required." }),
-  hex: z.string({ required_error: "Color hex is required." }),
-});
-
-export const bicycleValidationZodSchema = z.object({
+export const orderValidationZodSchema = z.object({
   body: z.object({
-    name: z.string({ required_error: "Name is required." }),
-    price: z
-      .number({ required_error: "Price is required." })
-      .min(0, { message: "Price must be a positive number." }),
-    description: z.string({ required_error: "Description is required." }),
-    colors: z
-      .array(colorSchema, { required_error: "Colors array is required." })
-      .nonempty("At least one color is required."),
-    stock: z
-      .number({ required_error: "Stock is required." })
-      .min(0, { message: "Stock cannot be negative." }),
-    category: z.string({ required_error: "Category is required." }).default("Bicycles"),
-    tags: z.array(z.string()).optional(),
-    sku: z
-      .number({ required_error: "SKU is required." })
-      .min(0, { message: "SKU must be a positive number." }),
-    image_url: z
-      .string({ required_error: "Image URL is required." })
-      .url("Invalid URL format."), // Uncomment this to enforce URL validation
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z
+      .string()
+      .email("Please enter a valid email address"),
+    phone: z
+      .string()
+      .regex(/^01[3-9]\d{8}$/, "Please enter a valid Bangladeshi phone number"),
+    streetAddress: z.string().min(1, "Street address is required"),
+    apartment: z.string().optional(),
+    city: z.string().min(1, "City is required"),
+    postcode: z.string().min(1, "Postcode is required"),
+    orderNotes: z.string().optional(),
+    products: z.array(
+      z.object({
+        product: z.string().min(1, "Product ID is required"),
+        quantity: z.number().min(1, "Quantity must be at least 1"),
+        price: z.number().min(1, "Price must be at least 1"),
+      })
+    ),
+    status: z.enum(["Pending", "Paid", "Shipped", "Complete", "Cancelled"]),
+    orderDate: z.date().default(() => new Date()),
+    transaction: z
+      .object({
+        id: z.string().optional(),
+        transactionStatus: z.string().optional(),
+        bank_status: z.string().optional(),
+        sp_code: z.string().optional(),
+        sp_message: z.string().optional(),
+        method: z.string().optional(),
+        date_time: z.string().optional(),
+      })
+      .optional(),
+    totalPrice: z.number().min(1, "Total price must be at least 1"),
   }),
 });
 
-// Exporting the validation schema
-export const bicycleValidation = {
-  bicycleValidationZodSchema,
+export const orderValidation = {
+  orderValidationZodSchema,
 };

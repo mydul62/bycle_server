@@ -1,8 +1,11 @@
-export type TUserRole = "admin" | "user";
-export type TUser = {
+export interface IUser {
   name: string;
   email: string;
   password: string;
-  role?: TUserRole
-  isBlocked?: boolean;
+  role: 'admin' | 'user';
+  phone?: string;
+  gender?: 'male' | 'female' | 'other';
+  dateOfBirth?: string;
+  photo?: string;
+
 }

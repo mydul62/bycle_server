@@ -31,12 +31,7 @@ for (const item of products) {
     return;
   }
 
-  // Deduct stock
-  foundProduct.stock -= quantity;
-  if (foundProduct.stock === 0) {
-    foundProduct.inStock = false;
-  }
-  await foundProduct.save();
+
 }
 
 // Create order object
@@ -104,10 +99,7 @@ const getRevenue = async (req: Request, res: Response): Promise<void> => {
 const getAllOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const orders = await orderService.getAllOrderServiceFromDB();
-    
-    
-
-
+  
     res.status(200).json({
       success: true,
       message: "Orders retrieved successfully",

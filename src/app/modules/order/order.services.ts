@@ -1,14 +1,13 @@
+import { bicycleModel } from "../products/products.model";
 import { Order } from "./order.interface";
 import { orderModel } from "./order.model";
 import { orderUtils } from "./order.utils";
 
-
-const createOrderServiceInDB = async (payload: Order,client_ip:string) => {
+const createOrderServiceInDB = async (payload: Order, client_ip: string) => {
   const newOrder = new orderModel(payload);
   let order = await newOrder.save();
   
-  
-  // payment integration
+  // Payment integration
   const shurjopayPayload = {
     amount: payload.totalPrice,
     order_id: order._id,
@@ -24,25 +23,33 @@ const createOrderServiceInDB = async (payload: Order,client_ip:string) => {
   const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
 
   if (payment?.transactionStatus) {
-    order = await orderModel.updateOne({
-      transaction: {
-        id: payment.sp_order_id,
-        transactionStatus: payment.transactionStatus,
+    await orderModel.findOneAndUpdate(
+      { _id: order._id }, 
+      {
+        $set: {
+          transaction: {
+            id: payment.sp_order_id,
+            transactionStatus: payment.transactionStatus,
+          },
+        },
       },
-    });
+      { new: true } // Return the updated document
+    );
   }
 
   return payment;
 };
+
 const getAllOrderServiceFromDB = async () => {
-  const allOrder =await orderModel.find();
+  const allOrder = await orderModel.find().populate("products.product");
   return allOrder;
 };
-const verifyPayment = async (order_id: string) => {
-  const verifiedPayment = await orderUtils. verifyPaymentAsync(order_id);
 
+const verifyPayment = async (order_id: string) => {
+  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+     
   if (verifiedPayment.length) {
-    await orderModel.findOneAndUpdate(
+    const order = await orderModel.findOneAndUpdate(
       {
         "transaction.id": order_id,
       },
@@ -54,25 +61,35 @@ const verifyPayment = async (order_id: string) => {
         "transaction.method": verifiedPayment[0].method,
         "transaction.date_time": verifiedPayment[0].date_time,
         status:
-          verifiedPayment[0].bank_status == "Success"
+          verifiedPayment[0].bank_status === "Success"
             ? "Paid"
-            : verifiedPayment[0].bank_status == "Failed"
+            : verifiedPayment[0].bank_status === "Failed"
             ? "Pending"
-            : verifiedPayment[0].bank_status == "Cancel"
+            : verifiedPayment[0].bank_status === "Cancel"
             ? "Cancelled"
             : "",
-      }
+      },
+      { new: true }
     );
+
+    if (order && verifiedPayment[0].bank_status === "Success") {
+      const bycle = await bicycleModel.findById(order._id);
+      
+      if (bycle) {
+        // bycle.stock -= order.quantity;
+        if (bycle.stock === 0) {
+          bycle.inStock = false;
+        }
+        await bycle.save();
+      }
+    }
   }
-  
 
   return verifiedPayment;
 };
 
-
- export const orderService = {
+export const orderService = {
   createOrderServiceInDB,
   getAllOrderServiceFromDB,
-  verifyPayment
-  
- }
+  verifyPayment,
+};

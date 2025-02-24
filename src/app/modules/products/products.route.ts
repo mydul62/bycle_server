@@ -1,7 +1,7 @@
 import express from 'express';
 import { productController } from './products.controller';
-import validateRequest from '../../middlewares/validateRequest';
 import { bycleValidation } from './products.validation';
+import validateRequest from '../../middlewares/validateRequest';
 const router = express.Router();
 
 

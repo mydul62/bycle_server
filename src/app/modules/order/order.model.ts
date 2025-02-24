@@ -60,13 +60,26 @@ const orderSchema = new Schema(
           required: [true, "Price is required"],
           min: [1, "Price must be at least 1"],
         },
-        status:{
-          type:String,
-          enum:["Pending","Paid","Shipped","Complete","Cancelled"],
-          default:"Pending"
-        }
       },
     ],
+    status:{
+      type:String,
+      enum:["Pending","Paid","Shipped","Complete","Cancelled"],
+      default:"Pending"
+    },
+    orderDate: {
+      type: Date,
+      default: Date.now, // Automatically sets today's date when an order is created
+    },
+    transaction: {
+      id: String,
+      transactionStatus: String,
+      bank_status: String,
+      sp_code: String,
+      sp_message: String,
+      method: String,
+      date_time: String,
+    },
     totalPrice: {
       type: Number,
       required: [true, "Total price is required"],

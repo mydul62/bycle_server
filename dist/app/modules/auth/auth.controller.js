@@ -8,25 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthControllers = void 0;
 const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const auth_service_1 = require("./auth.service");
 const userRegister = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const _a = req.body, { password } = _a, remaining = __rest(_a, ["password"]);
-    const result = yield auth_service_1.AuthService.userRegisterService(password, remaining);
+    const body = req.body;
+    const result = yield auth_service_1.AuthService.userRegisterService(body);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         message: 'User registered successfully',
@@ -35,16 +24,62 @@ const userRegister = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
     });
 }));
 const userLogin = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const payload = req.body;
-    const result = yield auth_service_1.AuthService.userLoginService(payload);
+    const body = req.body;
+    const data = yield auth_service_1.AuthService.userLoginService(body);
+    const { accessToken, refreshToken } = data;
+    res.cookie('refreshToken', refreshToken, {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+    });
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         message: 'Login successful',
         statusCode: 200,
+        data: accessToken,
+    });
+}));
+const refreshToken = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { refreshToken } = req.cookies;
+    const result = yield auth_service_1.AuthService.refreshTokenService(refreshToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Access token is retrieved succesfully!',
+        data: result,
+    });
+}));
+const AlluserGet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.AlluserGet();
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'All user retrieved succesfully!',
+        data: result,
+    });
+}));
+const UpdateRole = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.UpdateRole(req.params.id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'All user retrieved succesfully!',
+        data: result,
+    });
+}));
+const DeletedUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.DeletedUser(req.params.id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Deleted user succesfully!',
         data: result,
     });
 }));
 exports.AuthControllers = {
     userRegister,
     userLogin,
+    refreshToken,
+    AlluserGet,
+    UpdateRole,
+    DeletedUser
 };
