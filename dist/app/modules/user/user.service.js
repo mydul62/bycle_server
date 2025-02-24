@@ -89,8 +89,9 @@ const changePasswordService = (userId, body) => __awaiter(void 0, void 0, void 0
     return { message: 'Password changed successfully' };
 });
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const upateUser = (userId, body) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedUser = yield user_model_1.usermodel.findByIdAndUpdate(userId, body, { new: true, runValidators: true });
+const upateUser = (userID, body) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(userID, body);
+    const updatedUser = yield user_model_1.usermodel.findByIdAndUpdate(userID, body, { new: true, runValidators: true });
     return updatedUser;
 });
 const singleUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {

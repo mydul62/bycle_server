@@ -5,10 +5,10 @@ import { errorHandler } from './app/middlewares/globalerrorhandler';
 import { notFoundError } from './app/middlewares/notFound';
 const app = express()
 app.use(express.json());
-// app.use(cors({    origin: ["https://bycle-zone.vercel.app"],
-//   credentials: true }));
-app.use(cors({    origin: ["http://localhost:5173"],
+app.use(cors({    origin: ["https://bycle-zone.vercel.app"],
   credentials: true }));
+// app.use(cors({    origin: ["http://localhost:5173"],
+//   credentials: true }));
 
 app.use('/api', router);
 app.get('/', (req, res) => {

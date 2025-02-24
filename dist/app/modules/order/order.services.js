@@ -67,13 +67,18 @@ const verifyPayment = (order_id) => __awaiter(void 0, void 0, void 0, function* 
                         : "",
         }, { new: true });
         if (order && verifiedPayment[0].bank_status === "Success") {
-            const bycle = yield products_model_1.bicycleModel.findById(order._id);
-            if (bycle) {
-                // bycle.stock -= order.quantity;
-                if (bycle.stock === 0) {
-                    bycle.inStock = false;
+            for (const item of order.products) {
+                const bicycle = yield products_model_1.bicycleModel.findById(item.product);
+                if (bicycle) {
+                    bicycle.stock -= item.quantity; // স্টক কমানো
+                    if (bicycle.stock <= 0) {
+                        bicycle.inStock = false;
+                    }
+                    yield bicycle.save(); // আপডেট সংরক্ষণ
                 }
-                yield bycle.save();
+                else {
+                    console.log(`Product with ID ${item.product} not found in bicycleModel.`);
+                }
             }
         }
     }

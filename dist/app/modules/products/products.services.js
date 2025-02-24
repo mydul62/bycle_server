@@ -26,8 +26,7 @@ const createProductServiceInDB = (payload) => __awaiter(void 0, void 0, void 0, 
 //  }
 const getAllBicyclesServiceFromDB = (quary) => __awaiter(void 0, void 0, void 0, function* () {
     const queryMaker = new quaryMaker_1.default(products_model_1.bicycleModel.find(), quary)
-        .search(['name', 'description'])
-        .sort()
+        .search(['name',])
         .filter();
     const result = yield queryMaker.QueryModel;
     return result;

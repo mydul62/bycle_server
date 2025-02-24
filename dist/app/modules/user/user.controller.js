@@ -92,16 +92,17 @@ const singleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-const upateUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const id = req.user.userId;
-    // const body = req.body
-    // // const result = await AlluserService.upateUser(id, body);
-    // sendResponse(res, {
-    //   statusCode: 200,
-    //   success: true,
-    //   message: 'user profile update succesfully!',
-    //   data: result,
-    // });
+const upateUserInDB = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.user.userID;
+    console.log(id, req.body);
+    const body = { photo: '583485834583' };
+    const result = yield user_service_1.AlluserService.upateUser(id, body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'User profile updated successfully!',
+        data: result,
+    });
 }));
 const DeletedUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.AlluserService.DeletedUser(req.params.id);
@@ -120,6 +121,6 @@ exports.AlluserController = {
     UpdateRole,
     DeletedUser,
     changePasswordService,
-    upateUser,
+    upateUserInDB,
     singleUser
 };

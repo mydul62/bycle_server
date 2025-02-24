@@ -12,7 +12,7 @@ router.post('/login', (0, validation_1.validation)(user_validation_1.uservalidat
 router.post('/refresh-token', user_controller_1.AlluserController.refreshToken);
 router.get('/alluser', (0, verifyAuth_1.authorizeRole)(['admin']), user_controller_1.AlluserController.AlluserGet);
 router.get('/sigleusr', (0, verifyAuth_1.authorizeRole)(['user', 'admin']), user_controller_1.AlluserController.singleUser);
-router.put('/upateuser', (0, verifyAuth_1.authorizeRole)(['user', 'admin']), user_controller_1.AlluserController.upateUser);
+router.put('/updateuser', (0, verifyAuth_1.authorizeRole)(['user', 'admin']), user_controller_1.AlluserController.upateUserInDB);
 router.put('/updateRole/:id', (0, verifyAuth_1.authorizeRole)(['admin']), user_controller_1.AlluserController.UpdateRole);
 router.delete('/deletedUsers/:id', (0, verifyAuth_1.authorizeRole)(['admin']), user_controller_1.AlluserController.DeletedUser);
 router.put('/changePassword', (0, verifyAuth_1.authorizeRole)(['user', 'admin']), user_controller_1.AlluserController.changePasswordService);
