@@ -1,15 +1,15 @@
-# Blogging Site Server
-
-
-This repository contains the server-side code for a blogging platform, built using Node.js, Express.js, TypeScript, and MongoDB (via Mongoose). This server provides RESTful APIs for managing blogs, user authentication, and admin functionalities.
+# Bicycle Store API Server
+https://bycle-server.vercel.app/api'
+This repository contains the server-side code for a bicycle store platform, built using Node.js, Express.js, TypeScript, and MongoDB (via Mongoose). This server provides RESTful APIs for managing bicycle products, orders, and user authentication.
 
 ## Features
 
 - User Registration and Login (with password encryption using bcrypt)
-- Blog CRUD operations
+- Bicycle CRUD operations
+- Order management
 - Role-based access control (Admin functionalities)
 - Secure authentication with JWT
-- Block user functionality for admins
+- User role management and access control
 
 ## Technologies Used
 
@@ -22,21 +22,35 @@ This repository contains the server-side code for a blogging platform, built usi
 - **jsonwebtoken**: Secure authentication
 - **dotenv**: Manage environment variables
 
-***Server: https://assignment003-three.vercel.app***
 ## API Endpoints
 
-### Blogs
-- **Fetch all blogs**: `GET /api/blogs`
-- **Create a new blog**: `POST /api/blogs`
-- **Get a single blog by ID**: `GET /api/blogs/:id`
-- **Update a blog by ID**: `PUT /api/blogs/:id`
-- **Delete a blog by ID**: `DELETE /api/blogs/:id`
-- **Delete a blog by Admin**: `DELETE /api/admin/blogs/:id`
+### Order Routes
+- **Verify payment**: `GET /api/orders/verify` - `orderController.verifyPayment`
+- **Create an order**: `POST /api/orders` - `orderController.createOrder`
+- **Get all orders**: `GET /api/orders` - `orderController.getAllOrders`
+- **Get revenue**: `GET /api/orders/revenue` - `orderController.getRevenue`
+- **Delete an order**: `DELETE /api/orders/:productId` - `orderController.deleteOrderdb`
+
+### Bicycle Routes
+- **Create a bicycle**: `POST /api/bicycles` - `validateRequest(bycleValidation.bycleValidationZodSchema), productController.createBicycle`
+- **Get all bicycles**: `GET /api/bicycles` - `productController.getAllBicycles`
+- **Get a single bicycle**: `GET /api/bicycles/:productId` - `productController.getASingleBicycle`
+- **Delete a bicycle**: `DELETE /api/bicycles/:productId` - `productController.deleteASingeBicycle`
+- **Update a bicycle**: `PUT /api/bicycles/:productId` - `productController.updateBicycle`
 
 ### User Management
-- **Register a user**: `POST /api/auth/register`
-- **Login a user**: `POST /api/auth/login`
-- **Block a user by Admin**: `PUT /api/admin/:userId/block`
+- **Register a user**: `POST /api/users/register` - `validation(uservalidationAll.userRegistervalidation), AlluserController.userRegister`
+- **Login a user**: `POST /api/users/login` - `validation(uservalidationAll.userLoginvalidation), AlluserController.userLogin`
+- **Refresh token**: `POST /api/users/refresh-token` - `AlluserController.refreshToken`
+- **Get all users (Admin only)**: `GET /api/users/alluser` - `authorizeRole(['admin']), AlluserController.AlluserGet`
+- **Get a single user (User/Admin)**: `GET /api/users/sigleusr` - `authorizeRole(['user','admin']), AlluserController.singleUser`
+- **Update a user (User/Admin)**: `PUT /api/users/:id` - `authorizeRole(['user','admin']), AlluserController.upateUserInDB`
+- **Update user role (Admin only)**: `PUT /api/users/updateRole/:id` - `authorizeRole(['admin']), AlluserController.UpdateRole`
+- **Delete a user (Admin only)**: `DELETE /api/users/deletedUsers/:id` - `authorizeRole(['admin']), AlluserController.DeletedUser`
+- **Change password (User/Admin)**: `PUT /api/users/changePassword` - `authorizeRole(['user','admin']), AlluserController.changePasswordService`
+
+
+
 
 ## Project Structure
 
